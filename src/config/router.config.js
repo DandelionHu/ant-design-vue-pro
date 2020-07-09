@@ -14,7 +14,7 @@ export const asyncRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: 'menu.home' },
-    redirect: '/dashboard/workplace',
+    // redirect: '/dashboard/workplace',
     children: [
       // dashboard
       {
@@ -332,7 +332,7 @@ export const asyncRouterMap = [
 ]
 
 /**
- * 基础路由
+ * 基础路由，不需要登录可以访问的路由
  * @type { *[] }
  */
 export const constantRouterMap = [
@@ -345,17 +345,17 @@ export const constantRouterMap = [
       {
         path: 'login',
         name: 'login',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
+        component: () => import('@/views/user/Login')
       },
       {
         path: 'register',
         name: 'register',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
+        component: () => import('@/views/user/Register')
       },
       {
         path: 'register-result',
         name: 'registerResult',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult')
+        component: () => import('@/views/user/RegisterResult')
       },
       {
         path: 'recover',
@@ -364,10 +364,8 @@ export const constantRouterMap = [
       }
     ]
   },
-
   {
     path: '/404',
-    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
+    component: () => import('@/views/exception/404')
   }
-
 ]

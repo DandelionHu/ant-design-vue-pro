@@ -14,10 +14,15 @@ import store from '@/store'
  *
  *  @see https://github.com/vueComponent/ant-design-vue-pro/pull/53
  */
+// 注册全局指令v-action
 const action = Vue.directive('action', {
+  // 当被绑定的元素插入到 DOM 中时
   inserted: function (el, binding, vnode) {
+    // arg传给指令的参数 add、edit、delete
     const actionName = binding.arg
+    // 获取权限
     const roles = store.getters.roles
+    // vnode  vue编译时生成的虚拟节点
     const elVal = vnode.context.$route.meta.permission
     const permissionId = elVal instanceof String && [elVal] || elVal
     roles.permissions.forEach(p => {
@@ -25,6 +30,7 @@ const action = Vue.directive('action', {
         return
       }
       if (p.actionList && !p.actionList.includes(actionName)) {
+        // 没有权限，删除当前el
         el.parentNode && el.parentNode.removeChild(el) || (el.style.display = 'none')
       }
     })

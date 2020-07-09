@@ -15,7 +15,7 @@ const messages = {
     ...enUS
   }
 }
-
+// 注册i18n实例并引入语言文件
 const i18n = new VueI18n({
   silentTranslationWarn: true,
   locale: defaultLang,

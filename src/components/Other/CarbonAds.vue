@@ -43,7 +43,7 @@ export default {
     }
   },
   render () {
-    return <div id="carbon-ads" class={this.isMobile ? 'carbon-mobile' : ''} />
+    return "<div id='carbon-ads' class={this.isMobile ? 'carbon-mobile' : ''} />"
   }
 }
 </script>

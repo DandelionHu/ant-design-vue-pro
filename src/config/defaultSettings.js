@@ -14,16 +14,16 @@
 
 export default {
   navTheme: 'dark', // theme for nav menu
-  primaryColor: '#52C41A', // primary color of ant design
+  primaryColor: '#00b38b', // 默认主题色
   layout: 'sidemenu', // nav menu position: `sidemenu` or `topmenu`
   contentWidth: 'Fluid', // layout of content: `Fluid` or `Fixed`, only works when layout is topmenu
-  fixedHeader: false, // sticky header
-  fixSiderbar: false, // sticky siderbar
+  fixedHeader: true, // 固定 Header
+  fixSiderbar: true, // sticky siderbar
   colorWeak: false,
   menu: {
     locale: true
   },
-  title: 'Ant Design Pro',
+  title: 'LPG综合管理系统',
   pwa: false,
   iconfontUrl: '',
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true'

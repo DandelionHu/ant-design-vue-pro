@@ -2,11 +2,11 @@ const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
 
 const plugins = []
 if (IS_PROD) {
+  // 项目上线删除console
   plugins.push('transform-remove-console')
 }
 
-// lazy load ant-design-vue
-// if your use import on Demand, Use this code
+// 按需引入 ant-design-vue
 plugins.push(['import', {
   'libraryName': 'ant-design-vue',
   'libraryDirectory': 'es',

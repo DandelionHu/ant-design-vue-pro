@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-// base library
+// 按需引入ant-design-vue
 import {
   ConfigProvider,
   Layout,
@@ -46,15 +46,16 @@ import {
   message,
   notification
 } from 'ant-design-vue'
-import Viser from 'viser-vue'
+
+import Viser from 'viser-vue' // 可视化图表
 
 // ext library
-import VueCropper from 'vue-cropper'
+import VueCropper from 'vue-cropper' // 上传图片截图
 import Dialog from '@/components/Dialog'
 import MultiTab from '@/components/MultiTab'
 import PageLoading from '@/components/PageLoading'
-import PermissionHelper from '@/utils/helper/permission'
-import './directives/action'
+import PermissionHelper from '@/utils/helper/permission' // 按钮权限名称定义
+import './directives/action' // 权限指令action
 
 Vue.use(ConfigProvider)
 Vue.use(Layout)
@@ -113,4 +114,4 @@ Vue.use(PageLoading)
 Vue.use(PermissionHelper)
 Vue.use(VueCropper)
 
-process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')
+process.env.NODE_ENV !== 'production' && console.warn('antd使用按需加载')
