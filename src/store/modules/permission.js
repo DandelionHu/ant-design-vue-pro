@@ -11,7 +11,7 @@ function hasPermission (permission, route) {
   if (route.meta && route.meta.permission) {
     let flag = false
     for (let i = 0, len = permission.length; i < len; i++) {
-      flag = route.meta.permission.includes(permission[i])
+      flag = route.meta.permission.includes(permission[i].name)
       if (flag) {
         return true
       }
@@ -39,8 +39,9 @@ function hasRole(roles, route) {
 
 function filterAsyncRouter (routerMap, roles) {
   const accessedRouters = routerMap.filter(route => {
-    if (hasPermission(roles.permissionList, route)) {
+    if (hasPermission(roles, route)) {
       if (route.children && route.children.length) {
+        // 遍历子项children
         route.children = filterAsyncRouter(route.children, roles)
       }
       return true
@@ -64,8 +65,8 @@ const permission = {
   actions: {
     GenerateRoutes ({ commit }, data) {
       return new Promise(resolve => {
-        const { roles } = data
-        const accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
+        const { menu } = data
+        const accessedRouters = filterAsyncRouter(asyncRouterMap, menu)
         commit('SET_ROUTERS', accessedRouters)
         resolve()
       })

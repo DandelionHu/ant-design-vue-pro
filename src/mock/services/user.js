@@ -372,6 +372,30 @@ const info = (options) => {
 
 const userNav = (options) => {
   const nav = [
+    // 信息管理
+    {
+      'name': 'LPGSystemInformation',
+      'parentId': 0,
+      'id': 1,
+      'meta': {
+        'icon': 'dashboard',
+        'title': '信息管理',
+        'show': true
+      },
+      'component': 'RouteView',
+      'redirect': '/LPGSystemInformation/department/dep-list'
+    },
+    {
+      'name': 'DepList',
+      'parentId': 0,
+      'id': 1,
+      'meta': {
+        'icon': 'dashboard',
+        'title': '部门列表',
+        'show': true
+      },
+      'component': 'DepList'
+    },
     // dashboard
     {
       'name': 'dashboard',
@@ -767,4 +791,4 @@ const userNav = (options) => {
 }
 
 Mock.mock(/\/api\/user\/info/, 'get', info)
-Mock.mock(/\/api\/user\/nav/, 'get', userNav)
+Mock.mock(/\/LPGSystemManage\/admin\/sysAuthority\/findMemuFirst/, 'get', userNav)

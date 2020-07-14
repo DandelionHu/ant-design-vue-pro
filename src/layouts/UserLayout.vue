@@ -4,12 +4,9 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">Ant Design</span>
+            <img src="~@/assets/logoIndex.png" class="logo" alt="logo">
+            <span class="title">LPG综合管理系统</span>
           </a>
-        </div>
-        <div class="desc">
-          Ant Design 是西湖区最具影响力的 Web 设计规范
         </div>
       </div>
 
@@ -17,12 +14,11 @@
 
       <div class="footer">
         <div class="links">
-          <a href="_self">帮助</a>
-          <a href="_self">隐私</a>
-          <a href="_self">条款</a>
+          <a href="_self">小程序二维码</a>
+          <a href="_self">app二维码</a>
         </div>
         <div class="copyright">
-          Copyright &copy; 2018 vueComponent
+          技术支持：广东长盈光明科技有限公司
         </div>
       </div>
     </div>
@@ -73,7 +69,7 @@ export default {
         text-align: center;
 
         .header {
-          height: 44px;
+          height: 170px;
           line-height: 44px;
 
           .badge {
@@ -87,26 +83,19 @@ export default {
           }
 
           .logo {
-            height: 44px;
+            height: 80px;
             vertical-align: top;
-            margin-right: 16px;
             border-style: none;
+            margin-bottom:20px;
           }
 
           .title {
-            font-size: 33px;
+            font-size: 26px;
             color: rgba(0, 0, 0, .85);
             font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
             font-weight: 600;
-            position: relative;
-            top: 2px;
+            display:block;
           }
-        }
-        .desc {
-          font-size: 14px;
-          color: rgba(0, 0, 0, 0.45);
-          margin-top: 12px;
-          margin-bottom: 40px;
         }
       }
 

@@ -11,8 +11,7 @@ import { VueAxios } from './utils/request' // http
 import ProLayout, { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import themePluginConfig from '../config/themePluginConfig' // 主题色
 
-// mock
-// WARNING: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.
+// 模拟数据
 import './mock'
 
 import bootstrap from './core/bootstrap'

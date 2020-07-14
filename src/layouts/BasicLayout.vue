@@ -7,6 +7,7 @@
     :isMobile="isMobile"
     :handleMediaQuery="handleMediaQuery"
     :handleCollapse="handleCollapse"
+    :menuHeaderRender="menuHeaderRender"
     :logo="logoRender"
     :i18nRender="i18nRender"
     v-bind="settings"
@@ -39,7 +40,7 @@ import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
 import GlobalFooter from '@/components/GlobalFooter'
 import Ads from '@/components/Other/CarbonAds'
-import LogoSvg from '../assets/logo.svg?inline'
+import LogoImg from '../assets/logo.png'
 
 export default {
   name: 'BasicLayout',
@@ -55,7 +56,7 @@ export default {
       isProPreviewSite: process.env.VUE_APP_PREVIEW === 'true' && process.env.NODE_ENV !== 'development',
       // end
 
-      // base
+      // 导航栏
       menus: [],
       // 侧栏收起状态
       collapsed: false,
@@ -150,7 +151,10 @@ export default {
       }
     },
     logoRender () {
-      return <LogoSvg />
+      return LogoImg
+    },
+    menuHeaderRender (logo, title) {
+      return '<img src="' + title + '"/>'
     }
   }
 }

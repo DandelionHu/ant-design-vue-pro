@@ -1,15 +1,20 @@
+import Vue from 'vue'
 import axios from 'axios'
 import store from '@/store'
 import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
 import { VueAxios } from './axios'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import qs from 'qs'
 
 // 创建 axios 实例
 const request = axios.create({
   // API 请求的默认前缀
   baseURL: process.env.VUE_APP_API_BASE_URL,
-  timeout: 6000 // 请求超时时间
+  timeout: 6000, // 请求超时时间
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
 })
 
 // 异常拦截处理器
@@ -41,20 +46,31 @@ const errorHandler = (error) => {
   return Promise.reject(error)
 }
 
-// request interceptor
+// 请求拦截
 request.interceptors.request.use(config => {
   const token = storage.get(ACCESS_TOKEN)
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
   if (token) {
-    config.headers['Access-Token'] = token
+    config.headers['token'] = token
   }
+  config.data = qs.stringify(config.data) // 转为formdata数据格式
   return config
 }, errorHandler)
 
-// response interceptor
+// 响应拦截器
 request.interceptors.response.use((response) => {
-  return response.data
+  const { code, message, isSuccess } = response.data
+  if (code !== -1 && isSuccess) {
+    // 获取数据成功
+    return response.data
+  } else {
+    Vue.prototype.$notification['error']({
+      message: '错误',
+      description: message,
+      duration: 4
+    })
+  }
 }, errorHandler)
 
 const installer = {

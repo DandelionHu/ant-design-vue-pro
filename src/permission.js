@@ -27,35 +27,52 @@ router.beforeEach((to, from, next) => {
       // 结束进度条
       NProgress.done()
     } else {
-      // 权限为空
-      if (store.getters.roles.length === 0) {
-        // 请求用户信息
+      // 菜单为空
+      if (store.getters.menu.length === 0) {
+        // 请求菜单
         store
-          .dispatch('GetInfo')
+          .dispatch('GetMemu')
           .then(res => {
-            const roles = res.result && res.result.role
-            // generate dynamic router
-            store.dispatch('GenerateRoutes', { roles }).then(() => {
-              // 根据roles权限生成可访问的路由表
-              // 动态添加可访问路由表
-              router.addRoutes(store.getters.addRouters)
-              // 请求带有 redirect 重定向时，登录自动重定向到该地址
-              const redirect = decodeURIComponent(from.query.redirect || to.path)
-              if (to.path === redirect) {
-                // set the replace: true so the navigation will not leave a history record
-                next({ ...to, replace: true })
-              } else {
-                // 跳转到目的路由
-                next({ path: redirect })
-              }
-            })
+            // const roles = res.result && res.result.role
+            // // generate dynamic router
+            // store.dispatch('GenerateRoutes', { roles }).then(() => {
+            //   // 根据roles权限生成可访问的路由表
+            //   // 动态添加可访问路由表
+            //   router.addRoutes(store.getters.addRouters)
+            //   // 请求带有 redirect 重定向时，登录自动重定向到该地址
+            //   const redirect = decodeURIComponent(from.query.redirect || to.path)
+            //   if (to.path === redirect) {
+            //     // set the replace: true so the navigation will not leave a history record
+            //     next({ ...to, replace: true })
+            //   } else {
+            //     // 跳转到目的路由
+            //     next({ path: redirect })
+            //   }
+            // })
+            const menu = res.returnValue
+            if (res.returnValue.length > 0) {
+              store.dispatch('GenerateRoutes', { menu }).then(() => {
+                // 根据roles权限生成可访问的路由表
+                // 动态添加可访问路由表
+                router.addRoutes(store.getters.addRouters)
+                // 请求带有 redirect 重定向时，登录自动重定向到该地址
+                const redirect = decodeURIComponent(from.query.redirect || to.path)
+                if (to.path === redirect) {
+                  // 重定向，不留历史记录
+                  next({ ...to, replace: true })
+                } else {
+                  // 跳转到目的路由
+                  next({ path: redirect })
+                }
+              })
+            }
           })
           .catch(() => {
             notification.error({
               message: '错误',
-              description: '请求用户信息失败，请重试'
+              description: '请求菜单失败，请重试'
             })
-            // 失败时，获取用户信息失败时，调用登出，来清空历史保留信息
+            // 失败时，获取菜单失败时，调用登出，来清空历史保留信息
             store.dispatch('Logout').then(() => {
               // 跳转到登录
               next({ path: loginRoutePath, query: { redirect: to.fullPath } })

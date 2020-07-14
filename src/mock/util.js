@@ -5,14 +5,15 @@ const responseBody = {
   code: 0
 }
 
-export const builder = (data, message, code = 0, headers = {}) => {
-  responseBody.result = data
+export const builder = (data, message, code = 10000, headers = {}) => {
+  responseBody.returnValue = data
+  responseBody.isSuccess = true
   if (message !== undefined && message !== null) {
     responseBody.message = message
   }
-  if (code !== undefined && code !== 0) {
+  if (code !== undefined && code !== 10000) {
     responseBody.code = code
-    responseBody._status = code
+    responseBody.isSuccess = false
   }
   if (headers !== null && typeof headers === 'object' && Object.keys(headers).length > 0) {
     responseBody._headers = headers

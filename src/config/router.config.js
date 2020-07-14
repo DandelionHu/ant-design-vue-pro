@@ -18,6 +18,21 @@ export const asyncRouterMap = [
     children: [
       // dashboard
       {
+        path: '/LPGSystemInformation',
+        name: 'LPGSystemInformation',
+        redirect: '/LPGSystemInformation/department/dep-list',
+        component: RouteView,
+        meta: { title: 'menu.lll', keepAlive: true, icon: bxAnaalyse, permission: [ 'dashboard' ] },
+        children: [
+          {
+            path: '/LPGSystemInformation/department/dep-list',
+            name: 'DepList',
+            component: () => import('@/views/LPGSystemInformation/department/DepList'),
+            meta: { title: '部门列表', keepAlive: true, permission: [ ] }
+          }
+        ]
+      },
+      {
         path: '/dashboard',
         name: 'dashboard',
         redirect: '/dashboard/workplace',
@@ -345,7 +360,7 @@ export const constantRouterMap = [
       {
         path: 'login',
         name: 'login',
-        component: () => import('@/views/user/Login')
+        component: () => import('@/views/user/LoginNew')
       },
       {
         path: 'register',
