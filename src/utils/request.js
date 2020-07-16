@@ -54,6 +54,15 @@ request.interceptors.request.use(config => {
   if (token) {
     config.headers['token'] = token
   }
+
+  // 循环data，检测是否有数组
+  for (const key in config.data) {
+    if (Array.isArray(config.data[key])) {
+      // 是数组,阻止深度序列化
+      config.data = qs.stringify(config.data, { indices: false })
+      return config
+    }
+  }
   config.data = qs.stringify(config.data) // 转为formdata数据格式
   return config
 }, errorHandler)

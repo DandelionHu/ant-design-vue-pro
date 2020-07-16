@@ -22,13 +22,18 @@ export const asyncRouterMap = [
         name: 'LPGSystemInformation',
         redirect: '/LPGSystemInformation/department/dep-list',
         component: RouteView,
-        meta: { title: 'menu.lll', keepAlive: true, icon: bxAnaalyse, permission: [ 'dashboard' ] },
+        meta: {
+          title: '信息管理',
+          keepAlive: true,
+          icon: bxAnaalyse,
+          permission: [ 'LPGSystemInformation' ]
+        },
         children: [
           {
             path: '/LPGSystemInformation/department/dep-list',
             name: 'DepList',
             component: () => import('@/views/LPGSystemInformation/department/DepList'),
-            meta: { title: '部门列表', keepAlive: true, permission: [ ] }
+            meta: { title: '部门列表', keepAlive: true, permission: ['LPGSystemInformation'] }
           }
         ]
       },

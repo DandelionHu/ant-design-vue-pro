@@ -9,7 +9,7 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-const isProd = process.env.NODE_ENV === 'development'
+const isProd = process.env.NODE_ENV === 'production'
 
 const assetsCDN = {
   // webpack build externals
@@ -20,7 +20,7 @@ const assetsCDN = {
     axios: 'axios'
   },
   css: [],
-  // https://unpkg.com/browse/vue@2.6.10/
+  // cdn加速
   js: [
     '//cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js',
     '//cdn.jsdelivr.net/npm/vue-router@3.1.3/dist/vue-router.min.js',
@@ -32,7 +32,7 @@ const assetsCDN = {
 // vue.config.js
 const vueConfig = {
   configureWebpack: {
-    // webpack plugins
+    // webpack 插件
     plugins: [
       // Ignore all locale files of moment.js
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
@@ -98,7 +98,7 @@ const vueConfig = {
     // 代理服务器
     proxy: {
       '/LPGSystemManage': {
-        target: 'http://192.168.0.205:8680/',
+        target: 'http://192.168.0.183:8081/',
         ws: false,
         changeOrigin: true
       }

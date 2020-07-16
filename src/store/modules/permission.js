@@ -13,6 +13,7 @@ function hasPermission (permission, route) {
     for (let i = 0, len = permission.length; i < len; i++) {
       flag = route.meta.permission.includes(permission[i].name)
       if (flag) {
+        // 拥有权限返回true for循环结束
         return true
       }
     }
@@ -38,6 +39,7 @@ function hasRole(roles, route) {
 }
 
 function filterAsyncRouter (routerMap, roles) {
+  // 数组过滤
   const accessedRouters = routerMap.filter(route => {
     if (hasPermission(roles, route)) {
       if (route.children && route.children.length) {

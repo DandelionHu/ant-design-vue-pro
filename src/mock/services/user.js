@@ -376,7 +376,7 @@ const userNav = (options) => {
     {
       'name': 'LPGSystemInformation',
       'parentId': 0,
-      'id': 1,
+      'id': 1001,
       'meta': {
         'icon': 'dashboard',
         'title': '信息管理',
@@ -387,8 +387,8 @@ const userNav = (options) => {
     },
     {
       'name': 'DepList',
-      'parentId': 0,
-      'id': 1,
+      'parentId': 1001,
+      'id': 10001,
       'meta': {
         'icon': 'dashboard',
         'title': '部门列表',

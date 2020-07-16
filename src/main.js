@@ -18,7 +18,7 @@ import bootstrap from './core/bootstrap'
 import './core/lazy_use' // 按需引入
 import './permission' // 路由许可控制
 import './utils/filter' // 全局过滤器
-import './global.less' // 全局样式
+import './style/global.less' // 全局样式
 
 Vue.config.productionTip = false
 
