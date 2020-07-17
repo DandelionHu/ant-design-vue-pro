@@ -6,44 +6,52 @@
           label="关键字"
           :labelCol="{span: 8 }"
           :wrapperCol="{span: 16 }">
-          <a-input name="keyword" placeholder="请输入关键字" v-model="queryParam.keyword" />
+          <a-input name="keyword" placeholder="请输入关键字" v-model="queryParam.keyword" @change="onSearch"/>
         </a-form-item>
         <a-form-item
           label="创建日期"
           :labelCol="{span: 6 }"
           :wrapperCol="{span: 18 }">
-          <a-date-picker v-model="queryParam.startTime" placeholder="请输入更新日期"/>
-          <a-date-picker v-model="queryParam.endTime" placeholder="请输入更新日期"/>
+          <a-range-picker
+            :placeholder="['开始日期', '结束日期']"
+            v-model="searchData"
+            v-decorator="['range-picker', rangeConfig]"
+            @change="onDateChange"/>
         </a-form-item>
         <a-form-item>
-          <a-button type="primary">查询</a-button>
-          <a-button class="m-l10" type="primary" ghost>重置</a-button>
+          <a-button type="primary" @click="onSearch">查询</a-button>
+          <a-button class="m-l10" @click="onReset" type="primary" ghost>重置</a-button>
+          <a-button class="m-l10" @click="onAdd" type="normal">添加</a-button>
         </a-form-item>
       </a-form>
       <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
         :data="loadData"
-        :alert="true"
-        :rowSelection="rowSelection"
         showPagination="auto"
+        class="m-t10"
       >
         <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
         </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
-        </span>
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
+        <span slot="createTime" slot-scope="text">
+          {{ text | dayjs }}
+        </span>
+        <span slot="operationTime" slot-scope="text">
+          {{ text | dayjs }}
+        </span>
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">配置</a>
+            <a class="table-look" @click="handleLook(record)">查看</a>
             <a-divider type="vertical" />
-            <a @click="handleSub(record)">订阅报警</a>
+            <a class="table-edit" @click="handleEdit(record)">编辑</a>
+            <a-divider type="vertical" />
+            <a class="table-delete" @click="handleDelete(record)">删除</a>
           </template>
         </span>
       </s-table>
@@ -52,64 +60,8 @@
 </template>
 
 <script>
-  import { sysDeptDeleteAll } from '@/api/systemManage'
+  import { sysDeptDeleteAll, sysDeptFindList } from '@/api/systemManage'
   import { STable, Ellipsis } from '@/components'
-  const columns = [
-    {
-      title: '#',
-      scopedSlots: { customRender: 'serial' }
-    },
-    {
-      title: '规则编号',
-      dataIndex: 'no'
-    },
-    {
-      title: '描述',
-      dataIndex: 'description',
-      scopedSlots: { customRender: 'description' }
-    },
-    {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      needTotal: true,
-      customRender: (text) => text + ' 次'
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      scopedSlots: { customRender: 'status' }
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updatedAt',
-      sorter: true
-    },
-    {
-      title: '操作',
-      dataIndex: 'action',
-      width: '150px',
-      scopedSlots: { customRender: 'action' }
-    }
-  ]
-  const statusMap = {
-    0: {
-      status: 'default',
-      text: '关闭'
-    },
-    1: {
-      status: 'processing',
-      text: '运行中'
-    },
-    2: {
-      status: 'success',
-      text: '已上线'
-    },
-    3: {
-      status: 'error',
-      text: '异常'
-    }
-  }
   export default {
     name: 'DepList',
     components: {
@@ -117,34 +69,110 @@
       Ellipsis
     },
     data () {
-      this.columns = columns
       return {
-        ids: ['1283608292532232193', '1283608007130816514'],
+        rangeConfig: {
+          rules: [{ type: 'array', required: true, message: '请选择创建日期!' }]
+        },
+        // 表头
+        columns: [
+          {
+            title: '序号',
+            dataIndex: 'id',
+            scopedSlots: { customRender: 'serial' }
+          },
+          {
+            title: '部门名称',
+            dataIndex: 'name'
+          },
+          {
+            title: '部门描述',
+            dataIndex: 'descs',
+            scopedSlots: { customRender: 'description' }
+          },
+          {
+            title: '操作人',
+            dataIndex: 'operation'
+          },
+          {
+            title: '创建时间',
+            dataIndex: 'createTime',
+            scopedSlots: { customRender: 'createTime' }
+          },
+          {
+            title: '操作时间',
+            dataIndex: 'operationTime',
+            scopedSlots: { customRender: 'operationTime' }
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' }
+          }
+        ],
         // 查询参数
         queryParam: {},
+        // 日期
+        searchData: [],
+        // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
+          // 将所有可枚举属性的值从一个或多个源对象复制到目标对象
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          console.log('loadData request parameters:', requestParameters)
-          return this.getSysDeptDeleteAll()
+          console.log('提交参数', requestParameters)
+          return this.getList(requestParameters)
         }
       }
+    },
+    filters: {
+    },
+    computed: {
     },
     created () {
     },
     methods: {
-      getSysDeptDeleteAll () {
+      // 搜索
+      onSearch () {
+        this.$refs.table.refresh(true)
+      },
+      // 重置
+      onReset () {
+        this.searchData = []
+        this.queryParam = {}
+        this.onSearch()
+      },
+      // 添加
+      onAdd () {
+        this.$router.push({ path: '/LPGSystemInformation/department/dep-add' })
+      },
+      // 日期
+      onDateChange (date, dateString) {
+        this.queryParam.startTime = dateString[0]
+        this.queryParam.endTime = dateString[1]
+        this.onSearch()
+      },
+      // 查询
+      getList (data) {
+        return sysDeptFindList(data).then(res => {
+          return res
+        })
+      },
+      // 查看
+      handleLook (data) {
+        console.log(data)
+      },
+      // 编辑
+      handleEdit (data) {
+        console.log(data)
+      },
+      // 删除
+      handleDelete (data) {
         const obj = {
-          ids: this.ids,
-          type: 1,
-          name: 2
+          ids: []
         }
+        obj.ids.push(data.id)
         sysDeptDeleteAll(obj).then(res => {
           console.log(res)
         })
-      },
-      // 查询
-      handleSubmit () {
-        console.log('查询')
       }
     }
   }
