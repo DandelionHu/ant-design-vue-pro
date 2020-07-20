@@ -34,13 +34,6 @@ export const asyncRouterMap = [
             name: 'DepList',
             component: () => import('@/views/LPGSystemInformation/department/DepList'),
             meta: { title: '部门列表', keepAlive: true, permission: ['LPGSystemInformation'] }
-          },
-          {
-            path: '/LPGSystemInformation/department/dep-add',
-            hidden: true,
-            name: 'DepAdd',
-            component: () => import('@/views/LPGSystemInformation/department/DepAdd'),
-            meta: { title: '部门添加', keepAlive: true, permission: ['LPGSystemInformation'] }
           }
         ]
       },

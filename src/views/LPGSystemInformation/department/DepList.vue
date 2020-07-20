@@ -1,60 +1,64 @@
 <template>
   <page-header-wrapper>
     <a-card :body-style="{padding: '15px 20px'}" :bordered="false">
-      <a-form layout="inline">
-        <a-form-item
-          label="关键字"
-          :labelCol="{span: 8 }"
-          :wrapperCol="{span: 16 }">
-          <a-input name="keyword" placeholder="请输入关键字" v-model="queryParam.keyword" @change="onSearch"/>
-        </a-form-item>
-        <a-form-item
-          label="创建日期"
-          :labelCol="{span: 6 }"
-          :wrapperCol="{span: 18 }">
-          <a-range-picker
-            :placeholder="['开始日期', '结束日期']"
-            v-model="searchData"
-            v-decorator="['range-picker', rangeConfig]"
-            @change="onDateChange"/>
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" @click="onSearch">查询</a-button>
-          <a-button class="m-l10" @click="onReset" type="primary" ghost>重置</a-button>
-          <a-button class="m-l10" @click="onAdd" type="normal">添加</a-button>
-        </a-form-item>
-      </a-form>
-      <s-table
-        ref="table"
-        size="default"
-        rowKey="id"
-        :columns="columns"
-        :data="loadData"
-        showPagination="auto"
-        class="m-t10"
-      >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
-        <span slot="createTime" slot-scope="text">
-          {{ text | dayjs }}
-        </span>
-        <span slot="operationTime" slot-scope="text">
-          {{ text | dayjs }}
-        </span>
-        <span slot="action" slot-scope="text, record">
-          <template>
-            <a class="table-look" @click="handleLook(record)">查看</a>
-            <a-divider type="vertical" />
-            <a class="table-edit" @click="handleEdit(record)">编辑</a>
-            <a-divider type="vertical" />
-            <a class="table-delete" @click="handleDelete(record)">删除</a>
-          </template>
-        </span>
-      </s-table>
+      <div v-if="showList">
+        <a-form layout="inline">
+          <a-form-item
+            label="关键字"
+            :labelCol="{span: 8 }"
+            :wrapperCol="{span: 16 }">
+            <a-input name="keyword" placeholder="请输入关键字" v-model="queryParam.keyword" @change="onSearch"/>
+          </a-form-item>
+          <a-form-item
+            label="创建日期"
+            :labelCol="{span: 6 }"
+            :wrapperCol="{span: 18 }">
+            <a-range-picker
+              :placeholder="['开始日期', '结束日期']"
+              v-model="searchData"
+              v-decorator="['range-picker', rangeConfig]"
+              @change="onDateChange"/>
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="onSearch">查询</a-button>
+            <a-button class="m-l10" @click="onReset" type="primary" ghost>重置</a-button>
+            <a-button class="m-l10" @click="onAdd" type="normal">添加</a-button>
+          </a-form-item>
+        </a-form>
+        <s-table
+          ref="table"
+          size="default"
+          rowKey="id"
+          :columns="columns"
+          :data="loadData"
+          showPagination="auto"
+          class="m-t10"
+        >
+          <span slot="serial" slot-scope="text, record, index">
+            {{ index + 1 }}
+          </span>
+          <span slot="description" slot-scope="text">
+            <ellipsis :length="30" tooltip>{{ text }}</ellipsis>
+          </span>
+          <span slot="createTime" slot-scope="text">
+            {{ text | dayjs }}
+          </span>
+          <span slot="operationTime" slot-scope="text">
+            {{ text | dayjs }}
+          </span>
+          <span slot="action" slot-scope="text, record">
+            <template>
+              <a class="table-look" @click="handleLook(record)">查看</a>
+              <a-divider type="vertical" />
+              <a class="table-edit" @click="handleEdit(record)">编辑</a>
+              <a-divider type="vertical" />
+              <a class="table-delete" @click="handleDelete(record)">删除</a>
+            </template>
+          </span>
+        </s-table>
+      </div>
+      <!-- 添加编辑页面 -->
+      <dep-add v-if="showAdd" @editClose="editClose" :editID="editID"></dep-add>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -62,14 +66,19 @@
 <script>
   import { sysDeptDeleteAll, sysDeptFindList } from '@/api/systemManage'
   import { STable, Ellipsis } from '@/components'
+  import DepAdd from './DepAdd'
   export default {
     name: 'DepList',
     components: {
       STable,
-      Ellipsis
+      Ellipsis,
+      DepAdd
     },
     data () {
       return {
+        showList: true,
+        showAdd: false,
+        editID: '', // 编辑id
         rangeConfig: {
           rules: [{ type: 'array', required: true, message: '请选择创建日期!' }]
         },
@@ -142,7 +151,9 @@
       },
       // 添加
       onAdd () {
-        this.$router.push({ path: '/LPGSystemInformation/department/dep-add' })
+        this.editID = ''
+        this.showList = false
+        this.showAdd = true
       },
       // 日期
       onDateChange (date, dateString) {
@@ -163,15 +174,35 @@
       // 编辑
       handleEdit (data) {
         console.log(data)
+        this.editID = data.id
+        this.showList = false
+        this.showAdd = true
+      },
+      // 编辑关闭
+      editClose () {
+        this.showList = true
+        this.showAdd = false
       },
       // 删除
       handleDelete (data) {
-        const obj = {
-          ids: []
-        }
-        obj.ids.push(data.id)
-        sysDeptDeleteAll(obj).then(res => {
-          console.log(res)
+        const that = this
+        this.$confirm({
+          title: '删除提示',
+          content: `真的要删除 ${data.name} 吗?`,
+          okText: '删除',
+          okType: 'primary',
+          cancelText: '取消',
+          async onOk () {
+            const obj = {
+              ids: []
+            }
+            obj.ids.push(data.id)
+            const { returnValue: res } = await sysDeptDeleteAll(obj)
+            if (res) {
+              that.$message.info('删除成功')
+              that.editClose()
+            }
+          }
         })
       }
     }
