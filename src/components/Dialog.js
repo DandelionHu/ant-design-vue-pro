@@ -18,7 +18,7 @@ export default (Vue) => {
         const res = checkFunction()
         if (res instanceof Promise) {
           res.then(c => {
-            c && afterHandel()
+            c && afterHandel(c)
           })
         } else {
           res && afterHandel()
@@ -52,10 +52,10 @@ export default (Vue) => {
           })
         },
         handleOk () {
-          handle(this.$refs._component.onOK || this.$refs._component.onOk, () => {
+          handle(this.$refs._component.onOK || this.$refs._component.onOk, (c) => {
             this.visible = false
             this.$refs._component.$emit('close')
-            this.$refs._component.$emit('ok')
+            this.$refs._component.$emit('ok', c)
             dialogInstance.$destroy()
           })
         }

@@ -5,7 +5,9 @@ const systemManageApi = {
   SysDeptFindList: '/LPGSystemManage/admin/sysDept/findList',
   SysDeptSaveDept: '/LPGSystemManage/admin/sysDept/saveDept',
   SysDeptFindById: '/LPGSystemManage/admin/sysDept/findById',
-  SysDeptDeleteAll: '/LPGSystemManage/admin/sysDept/deleteAll'
+  SysDeptDeleteAll: '/LPGSystemManage/admin/sysDept/deleteAll',
+  // 人员
+  SysManagerFindList: '/LPGSystemManage/admin/sysManager/findManagers'
 }
 
 /**
@@ -57,6 +59,20 @@ export function sysDeptFindById (parameter) {
 export function sysDeptDeleteAll (parameter) {
   return request({
     url: systemManageApi.SysDeptDeleteAll,
+    method: 'post',
+    data: parameter
+  })
+}
+/**
+ * 人员列表
+ * parameter: {
+ *     page: '',
+ *     size: '',
+ * }
+ */
+export function sysManagerFindList (parameter) {
+  return request({
+    url: systemManageApi.SysManagerFindList,
     method: 'post',
     data: parameter
   })
