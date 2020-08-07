@@ -98,7 +98,12 @@ const vueConfig = {
     // 代理服务器
     proxy: {
       '/LPGSystemManage': {
-        target: 'http://192.168.0.183:8081/',
+        target: 'http://192.168.0.205:8680/',
+        ws: false,
+        changeOrigin: true
+      },
+      '/LPGEntersSellsSaves': {
+        target: 'http://192.168.0.205:8680/',
         ws: false,
         changeOrigin: true
       }

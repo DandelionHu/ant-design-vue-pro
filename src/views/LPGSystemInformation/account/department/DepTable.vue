@@ -17,7 +17,9 @@
       :columns="columns"
       :data="loadData"
       :rowSelection="rowSelection"
-      showPagination="auto"
+      :showPagination="false"
+      :pageSize="9999"
+      :scroll="{ y: 440 }"
       class="m-t10"
     >
       <span slot="description" slot-scope="text">
@@ -51,23 +53,28 @@
         columns: [
           {
             title: '员工编号',
-            dataIndex: 'empNo'
+            dataIndex: 'empNo',
+            width: 100
           },
           {
             title: '系统账号',
-            dataIndex: 'account'
+            dataIndex: 'account',
+            width: 120
           },
           {
             title: '姓名',
-            dataIndex: 'realName'
+            dataIndex: 'realName',
+            width: 100
           },
           {
             title: '联系电话',
-            dataIndex: 'phone'
+            dataIndex: 'phone',
+            width: 120
           },
           {
             title: '岗位',
-            dataIndex: 'roleName'
+            dataIndex: 'roleName',
+            width: 100
           },
           {
             title: '所属组织',
@@ -77,7 +84,8 @@
           {
             title: '创建时间',
             dataIndex: 'createTime',
-            scopedSlots: { customRender: 'createTime' }
+            scopedSlots: { customRender: 'createTime' },
+            width: 150
           }
         ],
         // 查询参数
@@ -111,6 +119,7 @@
     },
     mounted () {
       // 回填数据
+      this.selectedRowKeys = this.record
       console.log(this.record)
     },
     methods: {

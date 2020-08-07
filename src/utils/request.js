@@ -29,6 +29,17 @@ const errorHandler = (error) => {
         description: data.message
       })
     }
+    if (error.response.status === 406) {
+      notification.error({
+        message: '登录失效',
+        description: '登录失效，请重新登录'
+      })
+      store.dispatch('Logout').then(() => {
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
+      })
+    }
     if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
       notification.error({
         message: 'Unauthorized',
@@ -54,7 +65,7 @@ request.interceptors.request.use(config => {
   if (token) {
     config.headers['token'] = token
   }
-
+  Vue.prototype.$message.loading('加载中..', 0)
   // 循环data，检测是否有数组
   for (const key in config.data) {
     if (Array.isArray(config.data[key])) {
@@ -69,6 +80,7 @@ request.interceptors.request.use(config => {
 
 // 响应拦截器
 request.interceptors.response.use((response) => {
+  Vue.prototype.$message.destroy()
   const { code, message, isSuccess } = response.data
   if (code !== -1 && isSuccess) {
     // 获取数据成功

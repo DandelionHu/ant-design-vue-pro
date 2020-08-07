@@ -4,6 +4,7 @@
       <div v-if="showList">
         <a-form layout="inline">
           <a-form-item
+            class="width250"
             label="关键字"
             :labelCol="{span: 8 }"
             :wrapperCol="{span: 16 }">
@@ -34,9 +35,6 @@
           showPagination="auto"
           class="m-t10"
         >
-          <span slot="serial" slot-scope="text, record, index">
-            {{ index + 1 }}
-          </span>
           <span slot="description" slot-scope="text">
             <ellipsis :length="30" tooltip>{{ text }}</ellipsis>
           </span>
@@ -49,9 +47,9 @@
           <span slot="action" slot-scope="text, record">
             <template>
               <a class="table-look" @click="handleLook(record)">查看</a>
-              <a-divider type="vertical" />
+              <a-divider type="vertical"/>
               <a class="table-edit" @click="handleEdit(record)">编辑</a>
-              <a-divider type="vertical" />
+              <a-divider type="vertical"/>
               <a class="table-delete" @click="handleDelete(record)">删除</a>
             </template>
           </span>
@@ -59,6 +57,8 @@
       </div>
       <!-- 添加编辑页面 -->
       <dep-add v-if="showAdd" @editClose="editClose" :editID="editID"></dep-add>
+      <!-- 详情页面 -->
+      <dep-info v-if="showInfo" @editClose="editClose" :editID="editID"></dep-info>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -67,17 +67,21 @@
   import { sysDeptDeleteAll, sysDeptFindList } from '@/api/systemManage'
   import { STable, Ellipsis } from '@/components'
   import DepAdd from './DepAdd'
+  import DepInfo from './DepInfo'
+
   export default {
     name: 'DepList',
     components: {
       STable,
       Ellipsis,
-      DepAdd
+      DepAdd,
+      DepInfo
     },
-    data () {
+    data() {
       return {
         showList: true,
         showAdd: false,
+        showInfo: false,
         editID: '', // 编辑id
         rangeConfig: {
           rules: [{ type: 'array', required: true, message: '请选择创建日期!' }]
@@ -87,7 +91,7 @@
           {
             title: '序号',
             dataIndex: 'id',
-            scopedSlots: { customRender: 'serial' }
+            customRender: (text, record, index) => index + 1
           },
           {
             title: '部门名称',
@@ -132,59 +136,63 @@
         }
       }
     },
-    filters: {
-    },
-    computed: {
-    },
-    created () {
+    filters: {},
+    computed: {},
+    created() {
     },
     methods: {
       // 搜索
-      onSearch () {
+      onSearch() {
         this.$refs.table.refresh(true)
       },
       // 重置
-      onReset () {
+      onReset() {
         this.searchData = []
         this.queryParam = {}
         this.onSearch()
       },
       // 添加
-      onAdd () {
+      onAdd() {
         this.editID = ''
         this.showList = false
+        this.showInfo = false
         this.showAdd = true
       },
       // 日期
-      onDateChange (date, dateString) {
+      onDateChange(date, dateString) {
         this.queryParam.startTime = dateString[0]
         this.queryParam.endTime = dateString[1]
         this.onSearch()
       },
       // 查询
-      getList (data) {
+      getList(data) {
         return sysDeptFindList(data).then(res => {
           return res
         })
       },
       // 查看
-      handleLook (data) {
-        console.log(data)
-      },
-      // 编辑
-      handleEdit (data) {
-        console.log(data)
+      handleLook(data) {
         this.editID = data.id
         this.showList = false
+        this.showAdd = false
+        this.showInfo = true
+      },
+      // 编辑
+      handleEdit(data) {
+        this.editID = data.id
+        this.showList = false
+        this.showInfo = false
         this.showAdd = true
       },
       // 编辑关闭
-      editClose () {
+      editClose() {
         this.showList = true
         this.showAdd = false
+        this.showInfo = false
+        this.onRefresh()
       },
       // 删除
-      handleDelete (data) {
+      handleDelete(data) {
         const that = this
         this.$confirm({
           title: '删除提示',
@@ -192,7 +200,7 @@
           okText: '删除',
           okType: 'primary',
           cancelText: '取消',
-          async onOk () {
+          async onOk() {
             const obj = {
               ids: []
             }
@@ -200,10 +208,14 @@
             const { returnValue: res } = await sysDeptDeleteAll(obj)
             if (res) {
               that.$message.info('删除成功')
-              that.editClose()
+              that.onRefresh()
             }
           }
         })
+      },
+      // 刷新当前页
+      onRefresh() {
+        this.$refs.table.refresh()
       }
     }
   }

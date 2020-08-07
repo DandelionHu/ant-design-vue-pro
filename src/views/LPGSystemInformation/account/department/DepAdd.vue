@@ -34,8 +34,8 @@
     <a-form-item
       label="已选员工"
       :labelCol="{lg: {span: 1}, sm: {span: 3}}"
-      :wrapperCol="{lg: {span: 5}, sm: {span: 6}}">
-      <a-textarea value="{{ managerNames }}"></a-textarea>
+      :wrapperCol="{lg: {span: 15}, sm: {span: 16}}">
+      <a-textarea readonly v-model="managerNames"></a-textarea>
     </a-form-item>
     <a-form-item
       :wrapperCol="{lg: {span: 6}, sm: {span: 9}}"
@@ -104,6 +104,7 @@
             console.log('提交的数据', values)
             const params = { ...values }
             params.id = this.editID
+            params.managerIds = this.managerIds
             sysDeptSaveDept(params)
                 .then((res) => {
                   if (res.returnValue) {
@@ -129,14 +130,19 @@
         const { form } = this
         const { returnValue: res } = await sysDeptFindById({ id })
         console.log(res)
-        form.setFieldsValue(res)
+        this.managerNames = res.managersName
+        this.managerIds = res.managerIds.split(',')
+        form.setFieldsValue({
+          name: res.name,
+          descs: res.descs
+        })
       },
       // 选择员工
       onChoose() {
         const that = this
         this.$dialog(DepTable,
             {
-              record: [],
+              record: that.managerIds,
               on: {
                 ok (data) {
                   if (data.length > 0) {
@@ -161,7 +167,7 @@
             },
             {
               title: '选择员工',
-              width: 900,
+              width: 950,
               centered: true,
               maskClosable: false
             })
